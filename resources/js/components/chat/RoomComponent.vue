@@ -85,7 +85,17 @@
                 this.message = ''
 
                 console.log(this.messages);
+            },
+
+            scrollDown() {
+                let container = document.getElementById("chat-box");
+                let scrollHeight = container.scrollHeight;
+                container.scrollTop = scrollHeight;
             }
+        },
+
+        mounted() {
+            this.scrollDown();
         },
 
         created() {
@@ -93,8 +103,21 @@
 
             Echo.join('chat')
                 .listen('ChatSent', (e) => {
-                    console.log(e)
+                    this.messages.push(e.message);
+                    console.log(e);
                 });
+        },
+
+        updated() {
+            this.scrollDown();
         },
     }
 </script>
+
+<style lang="css" scoped>
+#chat-box {
+    overflow: auto;
+    height: 300px;
+}
+</style>
+
