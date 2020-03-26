@@ -35,7 +35,10 @@
                     <div class="card-header">Users Online</div>
                     <div id="user-online" class="card-body bg-secondary">
                         <ul class="list-group">
-                            <li class="list-group-item">Username</li>
+                            <li
+                                class="list-group-item"
+                                v-for="(user, index) in users" :key="index"
+                            >{{ user.name }}</li>
                         </ul>
                     </div>
                 </div>
@@ -49,7 +52,8 @@
         data() {
             return {
                 message: '',
-                messages: []
+                messages: [],
+                users: []
             }
         },
 
@@ -102,6 +106,15 @@
             this.fetchMessage();
 
             Echo.join('chat')
+                .here((user) => {
+                    this.users = user;
+                })
+                .joining((user) => {
+                    this.users.push(user);
+                })
+                .leaving((user) => {
+                    this.users = this.users.filter(u => u.id != user.id);
+                })
                 .listen('ChatSent', (e) => {
                     this.messages.push(e.message);
                     console.log(e);

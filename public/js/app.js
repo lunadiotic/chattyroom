@@ -1987,11 +1987,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       message: '',
-      messages: []
+      messages: [],
+      users: []
     };
   },
   props: {
@@ -2036,7 +2040,15 @@ __webpack_require__.r(__webpack_exports__);
     var _this2 = this;
 
     this.fetchMessage();
-    Echo.join('chat').listen('ChatSent', function (e) {
+    Echo.join('chat').here(function (user) {
+      _this2.users = user;
+    }).joining(function (user) {
+      _this2.users.push(user);
+    }).leaving(function (user) {
+      _this2.users = _this2.users.filter(function (u) {
+        return u.id != user.id;
+      });
+    }).listen('ChatSent', function (e) {
       _this2.messages.push(e.message);
 
       console.log(e);
@@ -48091,35 +48103,37 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
-      _vm._m(0)
+      _c("div", { staticClass: "col-md-4" }, [
+        _c("div", { staticClass: "card" }, [
+          _c("div", { staticClass: "card-header" }, [_vm._v("Users Online")]),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "card-body bg-secondary",
+              attrs: { id: "user-online" }
+            },
+            [
+              _c(
+                "ul",
+                { staticClass: "list-group" },
+                _vm._l(_vm.users, function(user, index) {
+                  return _c(
+                    "li",
+                    { key: index, staticClass: "list-group-item" },
+                    [_vm._v(_vm._s(user.name))]
+                  )
+                }),
+                0
+              )
+            ]
+          )
+        ])
+      ])
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-4" }, [
-      _c("div", { staticClass: "card" }, [
-        _c("div", { staticClass: "card-header" }, [_vm._v("Users Online")]),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "card-body bg-secondary",
-            attrs: { id: "user-online" }
-          },
-          [
-            _c("ul", { staticClass: "list-group" }, [
-              _c("li", { staticClass: "list-group-item" }, [_vm._v("Username")])
-            ])
-          ]
-        )
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
