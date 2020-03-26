@@ -23,9 +23,10 @@
                                 class="form-control"
                                 v-model="message"
                                 @keyup.enter="sendMessage()"
+                                @keydown="typingEvent()"
                             >
                         </div>
-                        <p class="text-muted">Username typing...</p>
+                        <p class="text-muted" v-if="userTyping">{{ userTyping.name }} typing...</p>
                     </div>
                 </div>
             </div>
@@ -53,7 +54,9 @@
             return {
                 message: '',
                 messages: [],
-                users: []
+                users: [],
+                userTyping: false,
+                typingTimer: false
             }
         },
 
@@ -70,6 +73,11 @@
                     }).catch((err) => {
                         console.log(err);
                     });
+            },
+
+            typingEvent() {
+                Echo.join('chat')
+                    .whisper('typing', this.user);
             },
 
             sendMessage() {
@@ -118,6 +126,17 @@
                 .listen('ChatSent', (e) => {
                     this.messages.push(e.message);
                     console.log(e);
+                })
+                .listenForWhisper('typing', (user) => {
+                    this.userTyping = user;
+
+                    if(this.typingTimer) {
+                        clearTimeout(this.typingTimer);
+                    }
+
+                    this.typingTimer = setTimeout(() => {
+                       this.userTyping = false;
+                    }, 2000);
                 });
         },
 
