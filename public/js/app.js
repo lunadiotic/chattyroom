@@ -1986,6 +1986,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1997,9 +1998,17 @@ __webpack_require__.r(__webpack_exports__);
     user: Object
   },
   methods: {
-    sendMessage: function sendMessage() {
+    fetchMessage: function fetchMessage() {
       var _this = this;
 
+      axios.get('/fetch').then(function (result) {
+        _this.messages = result.data;
+        console.log(result.data);
+      })["catch"](function (err) {
+        console.log(err);
+      });
+    },
+    sendMessage: function sendMessage() {
       this.messages.push({
         user: this.user,
         message: this.message
@@ -2007,15 +2016,16 @@ __webpack_require__.r(__webpack_exports__);
       axios.post('/send', {
         message: this.message
       }).then(function (result) {
-        _this.message = '';
         console.log(result);
       })["catch"](function (err) {
         console.log(err);
       });
+      this.message = '';
       console.log(this.messages);
     }
   },
   created: function created() {
+    this.fetchMessage();
     Echo.join('chat').listen('ChatSent', function (e) {
       console.log(e);
     });
@@ -47353,7 +47363,32 @@ var render = function() {
         _c("div", { staticClass: "card" }, [
           _c("div", { staticClass: "card-header" }, [_vm._v("Chat Room")]),
           _vm._v(" "),
-          _vm._m(0),
+          _c(
+            "div",
+            {
+              staticClass: "card-body bg-secondary",
+              attrs: { id: "chat-box" }
+            },
+            _vm._l(_vm.messages, function(chat, index) {
+              return _c(
+                "div",
+                { key: index, staticClass: "media m-2 bg-light rounded" },
+                [
+                  _c("div", { staticClass: "media-body m-2" }, [
+                    _c("h5", { staticClass: "mt-0" }, [
+                      _vm._v(_vm._s(chat.user.name))
+                    ]),
+                    _vm._v(
+                      "\n                            " +
+                        _vm._s(chat.message) +
+                        "\n                        "
+                    )
+                  ])
+                ]
+              )
+            }),
+            0
+          ),
           _vm._v(" "),
           _c("div", { staticClass: "card-footer" }, [
             _c("div", { staticClass: "form-group" }, [
@@ -47396,30 +47431,11 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
-      _vm._m(1)
+      _vm._m(0)
     ])
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "card-body bg-secondary", attrs: { id: "chat-box" } },
-      [
-        _c("div", { staticClass: "media bg-light rounded" }, [
-          _c("div", { staticClass: "media-body m-2" }, [
-            _c("h5", { staticClass: "mt-0" }, [_vm._v("Username")]),
-            _vm._v(
-              "\n                            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Animi nisi, nemo cupiditate tenetur laborum amet incidunt quasi voluptates earum, expedita officiis, adipisci reiciendis eaque harum sunt aspernatur vel vitae sit.\n                        "
-            )
-          ])
-        ])
-      ]
-    )
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement

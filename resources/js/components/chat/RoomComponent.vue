@@ -7,11 +7,12 @@
 
                     <div id="chat-box" class="card-body bg-secondary">
                         <div
-                            class="media bg-light rounded"
+                            class="media m-2 bg-light rounded"
+                            v-for="(chat, index) in messages" :key="index"
                         >
                             <div class="media-body m-2">
-                                <h5 class="mt-0">Username</h5>
-                                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Animi nisi, nemo cupiditate tenetur laborum amet incidunt quasi voluptates earum, expedita officiis, adipisci reiciendis eaque harum sunt aspernatur vel vitae sit.
+                                <h5 class="mt-0">{{ chat.user.name }}</h5>
+                                {{ chat.message }}
                             </div>
                         </div>
                     </div>
@@ -57,6 +58,16 @@
         },
 
         methods: {
+            fetchMessage() {
+                axios.get('/fetch')
+                    .then((result) => {
+                        this.messages = result.data;
+                        console.log(result.data);
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+            },
+
             sendMessage() {
                 this.messages.push({
                     user: this.user,
@@ -66,17 +77,20 @@
                 axios.post('/send', {
                     message: this.message
                 }).then((result) => {
-                    this.message = ''
                     console.log(result);
                 }).catch((err) => {
                     console.log(err);
                 });
+
+                this.message = ''
 
                 console.log(this.messages);
             }
         },
 
         created() {
+            this.fetchMessage();
+
             Echo.join('chat')
                 .listen('ChatSent', (e) => {
                     console.log(e)
