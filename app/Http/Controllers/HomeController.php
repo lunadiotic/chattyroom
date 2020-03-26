@@ -24,7 +24,23 @@ class HomeController extends Controller
      */
     public function index()
     {
-        broadcast(new ChatSent('Chat Message'))->toOthers();
         return view('home');
+    }
+
+    /**
+     * Send message from axios
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function sendMessage(Request $request)
+    {
+        $message = $request->user()->chats()->create([
+            'message' => $request->message
+        ]);
+
+        broadcast(new ChatSent($message->load('user')))->toOthers();
+
+        return ['status' => 'success'];
     }
 }
